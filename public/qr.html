@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Códigos QR · Esferas del Dragón</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Nunito", "Segoe UI", sans-serif; background: #f4f1ea; color: #1b1b1b; padding: 24px 16px; }
+  .panel { max-width: 1000px; margin: 0 auto 24px; background: #fff; border-radius: 14px; padding: 18px 20px; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+  .panel h2 { margin: 0 0 8px; }
+  .fila { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+  input { font: inherit; padding: 8px 10px; border: 2px solid #ccc; border-radius: 8px; min-width: 0; flex: 1 1 260px; }
+  button { font: inherit; font-weight: 800; padding: 9px 16px; border-radius: 8px; border: 0; cursor: pointer; background: #ff8c00; color: #fff; }
+  button.sec { background: #333; }
+  button.peligro { background: #c62828; }
+  .nota { font-size: 14px; color: #555; margin: 6px 0 0; }
+  #confirmar[hidden], [hidden] { display: none !important; }
+  .grilla { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+  .tarjeta {
+    background: #fff; border: 3px dashed #ff8c00; border-radius: 18px; padding: 18px; text-align: center;
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  .tarjeta h3 { font-family: "Bangers", Impact, sans-serif; font-weight: 400; font-size: 30px; margin: 0 0 4px; color: #d35400; letter-spacing: 1px; }
+  .tarjeta .bolita { width: 60px; height: 60px; margin: 0 auto 8px; }
+  .qr { display: grid; place-items: center; margin: 8px 0; }
+  .qr img, .qr canvas { width: 220px !important; height: 220px !important; }
+  .url { font-size: 11px; color: #777; word-break: break-all; }
+  .pie { font-weight: 800; margin-top: 6px; }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .panel { display: none; }
+    .grilla { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="panel">
+  <h2>🐉 Los 7 códigos QR</h2>
+  <p class="nota">Imprimí esta página (Ctrl + P) y escondé cada tarjeta en la fiesta. Los invitados solo necesitan internet en el celular.</p>
+  <div class="fila" id="login">
+    <label for="clave"><b>Clave de administrador:</b></label>
+    <input id="clave" type="password" autocomplete="current-password">
+    <button id="entrar">Entrar</button>
+  </div>
+  <div class="fila">
+    <label for="base"><b>Dirección:</b></label>
+    <input id="base">
+    <button id="regen">Regenerar QR</button>
+    <button class="sec" onclick="window.print()">Imprimir</button>
+  </div>
+  <p class="nota">La dirección debe ser la de tu web pública (ej: https://cumple-arian.onrender.com). Si la cambiás, tocá "Regenerar QR".</p>
+  <div class="fila">
+    <button class="peligro" id="reset">Reiniciar juego (borrar esferas)</button>
+    <span id="confirmar" hidden>¿Seguro? <button class="peligro" id="si">Sí, borrar</button> <button class="sec" id="no">Cancelar</button></span>
+    <span id="msg"></span>
+  </div>
+</div>
+
+<div class="grilla" id="grilla"></div>
+
+<script src="/js/esferas.js"></script>
+<script src="/js/qrcode.min.js"></script>
+<script>
+  const PAL = ["", "1 estrella", "2 estrellas", "3 estrellas", "4 estrellas", "5 estrellas", "6 estrellas", "7 estrellas"];
+  let tokens = {};
+
+  function generar() {
+    const base = document.getElementById("base").value.trim().replace(/\/+$/, "");
+    const g = document.getElementById("grilla");
+    g.innerHTML = "";
+    for (let n = 1; n <= 7; n++) {
+      const url = `${base}/e/${n}/${tokens[n]}`;
+      const t = document.createElement("div");
+      t.className = "tarjeta";
+      t.innerHTML = `<div class="bolita">${esferaSVG(n, false)}</div><h3>Esfera de ${PAL[n]}</h3><div class="qr"></div><div class="pie">¡Escaneame y entregame a Shenlong!</div><div class="url"></div>`;
+      t.querySelector(".url").textContent = url;
+      new QRCode(t.querySelector(".qr"), { text: url, width: 440, height: 440, correctLevel: QRCode.CorrectLevel.M });
+      g.appendChild(t);
+    }
+  }
+
+  const msg = document.getElementById("msg");
+  let clave = "";
+  try { clave = sessionStorage.getItem("clave") || ""; } catch (e) {}
+  const cab = () => ({ "x-admin-key": clave });
+
+  async function cargar() {
+    const r = await fetch("/api/info", { headers: cab(), cache: "no-store" });
+    if (!r.ok) { msg.textContent = clave ? "Clave incorrecta" : "Ingresá la clave"; return; }
+    const d = await r.json();
+    try { sessionStorage.setItem("clave", clave); } catch (e) {}
+    document.getElementById("login").hidden = true;
+    msg.textContent = "";
+    tokens = d.tokens;
+    document.getElementById("base").value = d.base;
+    generar();
+  }
+  document.getElementById("entrar").onclick = () => { clave = document.getElementById("clave").value; cargar(); };
+  document.getElementById("clave").onkeydown = (e) => { if (e.key === "Enter") document.getElementById("entrar").click(); };
+  cargar();
+  document.getElementById("regen").onclick = generar;
+
+  const conf = document.getElementById("confirmar");
+  document.getElementById("reset").onclick = () => { conf.hidden = false; };
+  document.getElementById("no").onclick = () => { conf.hidden = true; };
+  document.getElementById("si").onclick = async () => {
+    conf.hidden = true;
+    const r = await fetch("/api/reset", { method: "POST", headers: cab() });
+    msg.textContent = r.ok ? "✔ Juego reiniciado" : "No se pudo reiniciar";
+  };
+</script>
+</body>
+</html>

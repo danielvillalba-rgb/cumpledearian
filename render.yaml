@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: cumple-arian
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/estado
+    envVars:
+      - key: ADMIN_KEY
+        sync: false        # Render te la pide al crear el servicio
+      - key: SECRET
+        generateValue: true # Render genera una clave fija: los QR no cambian

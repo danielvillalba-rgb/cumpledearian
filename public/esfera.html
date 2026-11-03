@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>¡Encontraste una Esfera!</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; min-height: 100dvh;
+    font-family: "Nunito", "Segoe UI", sans-serif; color: #fff;
+    background: radial-gradient(ellipse at 50% 20%, #17306b 0%, #050914 75%);
+    display: grid; grid-template-columns: minmax(0, 1fr); place-items: center;
+    padding: 24px 16px calc(24px + env(safe-area-inset-bottom, 0px));
+    overflow-x: hidden;
+  }
+  main { width: 100%; max-width: 420px; min-width: 0; text-align: center; overflow-wrap: break-word; }
+  h1 {
+    margin: 0 0 6px; font-family: "Bangers", Impact, sans-serif; font-weight: 400; font-size: clamp(28px, 9vw, 40px); letter-spacing: 1px;
+    color: #ffd23f; -webkit-text-stroke: 1.5px #b33a00; text-shadow: 3px 3px 0 #4a1500;
+  }
+  .sub { opacity: .85; margin: 0 0 18px; font-size: 17px; }
+  .bola {
+    width: 190px; height: 190px; margin: 0 auto 22px;
+    filter: drop-shadow(0 0 24px rgba(255,160,0,.7));
+    animation: gira 3.5s ease-in-out infinite;
+  }
+  .bola svg { width: 100%; height: 100%; }
+  @keyframes gira { 50% { transform: translateY(-8px) rotate(6deg); } }
+  label { display: block; font-weight: 800; font-size: 18px; margin-bottom: 10px; }
+  input {
+    width: 100%; font: inherit; font-size: 22px; font-weight: 800; text-align: center;
+    padding: 14px 16px; border-radius: 16px; border: 3px solid #ffb31a;
+    background: #0b1530; color: #fff; outline: none;
+  }
+  input:focus { box-shadow: 0 0 0 4px rgba(255,179,26,.35); }
+  button {
+    margin-top: 16px; width: 100%; font: inherit; font-size: 22px; font-weight: 800;
+    padding: 16px; border: 0; border-radius: 16px; cursor: pointer;
+    color: #3a1300; background: linear-gradient(180deg, #ffd23f, #ff8c00);
+    box-shadow: 0 6px 0 #a34e00, 0 10px 24px rgba(255,120,0,.45);
+  }
+  button:active { transform: translateY(4px); box-shadow: 0 2px 0 #a34e00; }
+  button:disabled { opacity: .6; }
+  .error { color: #ff8a8a; font-weight: 800; min-height: 1.4em; margin-top: 12px; }
+  .ok h1 { font-size: 36px; }
+  .grande { font-size: 20px; line-height: 1.4; }
+  .grande b { color: #ffd23f; }
+</style>
+</head>
+<body>
+<main id="app">
+  <h1>¡Encontraste una Esfera!</h1>
+  <p class="sub" id="cual"></p>
+  <div class="bola" id="bola"></div>
+  <form id="form" autocomplete="off">
+    <label for="nombre">Ingresá tu nombre</label>
+    <input id="nombre" maxlength="24" placeholder="Tu nombre" required autofocus>
+    <button id="btn" type="submit">¡Entregar a Shenlong!</button>
+    <div class="error" id="error" role="alert"></div>
+  </form>
+</main>
+
+<script src="/js/esferas.js"></script>
+<script>
+  const [, , n, token] = location.pathname.split("/");
+  const PAL = ["", "una estrella", "dos estrellas", "tres estrellas", "cuatro estrellas", "cinco estrellas", "seis estrellas", "siete estrellas"];
+  document.getElementById("cual").textContent = "Es la esfera de " + PAL[n];
+  document.getElementById("bola").innerHTML = esferaSVG(+n, false);
+
+  const app = document.getElementById("app");
+  function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+  function terminado(html) {
+    app.classList.add("ok");
+    app.innerHTML = `<div class="bola">${esferaSVG(+n, false)}</div>${html}`;
+  }
+
+  // ¿ya fue entregada?
+  fetch("/api/estado", { cache: "no-store" }).then((r) => r.json()).then((est) => {
+    const e = est.esferas[n];
+    if (e) terminado(`<h1>Esta esfera ya fue entregada</h1><p class="grande">La encontró <b>${esc(e.nombre)}</b>.<br>¡Buscá las que faltan!</p>`);
+  }).catch(() => {});
+
+  document.getElementById("form").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const nombre = document.getElementById("nombre").value.trim();
+    const err = document.getElementById("error");
+    const btn = document.getElementById("btn");
+    if (!nombre) { err.textContent = "Escribí tu nombre"; return; }
+    btn.disabled = true; err.textContent = "";
+    try {
+      const r = await fetch("/api/esfera", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ n: +n, token, nombre }),
+      });
+      const d = await r.json();
+      if (r.ok) {
+        const faltan = 7 - d.total;
+        terminado(
+          `<h1>¡Gracias, ${esc(nombre)}!</h1>` +
+          `<p class="grande">Entregaste la esfera de <b>${PAL[n]}</b>.<br>` +
+          (faltan === 0
+            ? `<b>¡Era la última!</b> Mirá la pantalla: Shenlong tiene algo que decirte 🐉`
+            : `Faltan <b>${faltan}</b> esfera${faltan > 1 ? "s" : ""}. Mirá la pantalla 👀`) +
+          `</p>`
+        );
+      } else if (r.status === 409) {
+        terminado(`<h1>Esta esfera ya fue entregada</h1><p class="grande">La encontró <b>${esc(d.nombre)}</b>.<br>¡Buscá las que faltan!</p>`);
+      } else {
+        err.textContent = d.error || "Algo salió mal, probá de nuevo";
+        btn.disabled = false;
+      }
+    } catch (e) {
+      err.textContent = "No hay conexión. Revisá tu internet y probá de nuevo";
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

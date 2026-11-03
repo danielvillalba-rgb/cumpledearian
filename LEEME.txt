@@ -1,0 +1,43 @@
+DESAFÍO DE LAS ESFERAS DEL DRAGÓN - CUMPLE DE ARIAN  (Node.js)
+==============================================================
+
+PÁGINAS
+  /        Pantalla grande con Shenlong (abrir en la TV / proyector)
+  /qr      Los 7 códigos QR para imprimir (pide la clave ADMIN_KEY)
+  /e/N/... Página que abre cada QR en el celular de los invitados
+
+PUBLICAR (GitHub + Render, gratis)
+  1) Creá un repositorio en GitHub y subí TODO el contenido de esta carpeta
+     (server.js, package.json, render.yaml, la carpeta public, etc.).
+  2) Entrá a https://render.com con tu cuenta de GitHub.
+     New + -> Blueprint -> elegí el repositorio -> Apply.
+     (render.yaml ya tiene toda la configuración.)
+  3) Render te va a pedir ADMIN_KEY: escribí una clave tuya.
+     SECRET la genera Render sola (hace que los QR nunca cambien).
+  4) Cuando termine te da una dirección, ej: https://cumple-arian.onrender.com
+       Pantalla grande:  https://cumple-arian.onrender.com/
+       Códigos QR:       https://cumple-arian.onrender.com/qr
+  5) Abrí /qr, poné la clave, revisá que la dirección sea la de Render
+     e imprimí (Ctrl + P).
+
+  Cada vez que subas cambios a GitHub, Render actualiza la web solo.
+
+IMPORTANTE (plan gratis de Render)
+  - Si nadie entra por 15 minutos, el servidor "se duerme" y tarda ~1 minuto
+    en despertar. Abrí la pantalla grande un rato antes de la fiesta: mientras
+    esté abierta, lo mantiene despierto.
+  - Si el servidor se reinicia, se borran las esferas entregadas (los QR
+    siguen sirviendo). No subas cambios a GitHub durante la fiesta.
+
+MÚSICA (public\mp3\audio.mp3, suena en bucle)
+  Los navegadores no dejan que una web suene sola hasta que alguien la toca.
+  En la TV: abrí la web y hacé UN clic en cualquier parte (por ejemplo en
+  "Pantalla completa"). Desde ahí suena todo el tiempo.
+  Si usás Microsoft Edge en la TV, podés evitar ese clic:
+  edge://settings/content/mediaAutoplay -> "Permitir".
+
+FOTO DE ARIAN (aparece en el mensaje final de Shenlong)
+  Guardala como  public\img\arian.jpg   (también sirve .png / .webp)
+
+REINICIAR EL JUEGO
+  Botón "Reiniciar juego" en /qr. Los QR impresos siguen sirviendo.
