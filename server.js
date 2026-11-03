@@ -44,10 +44,13 @@ function cargar() {
   try { d = JSON.parse(fs.readFileSync(DATOS, "utf8")); } catch { /* primera vez */ }
   d.esferas = d.esferas || {};
   d.ultimo = d.ultimo || null;
-  if (process.env.SECRET) {
+  // Los códigos salen de SECRET (o de ADMIN_KEY si no hay SECRET): así son
+  // siempre los mismos aunque el servidor se reinicie.
+  const semilla = process.env.SECRET || ADMIN_KEY;
+  if (semilla) {
     d.tokens = {};
     for (let n = 1; n <= 7; n++) {
-      d.tokens[n] = crypto.createHmac("sha256", process.env.SECRET).update("esfera-" + n).digest("base64url").slice(0, 10);
+      d.tokens[n] = crypto.createHmac("sha256", semilla).update("esfera-" + n).digest("base64url").slice(0, 10);
     }
   } else if (!d.tokens) {
     d.tokens = {};
@@ -150,7 +153,9 @@ function leerJSON(req) {
 function esAdmin(req, url) {
   const k = req.headers["x-admin-key"] || url.searchParams.get("key") || "";
   if (!ADMIN_KEY) {
-    // Sin ADMIN_KEY solo se permite desde la misma PC (modo prueba local)
+    // Sin ADMIN_KEY solo se permite desde la misma PC (modo prueba local).
+    // Si el pedido pasa por un proxy (Render, etc.) nunca es "la misma PC".
+    if (req.headers["x-forwarded-for"] || req.headers["x-forwarded-proto"] || process.env.RENDER) return false;
     const ip = req.socket.remoteAddress || "";
     return ip === "127.0.0.1" || ip === "::1" || ip === "::ffff:127.0.0.1";
   }
