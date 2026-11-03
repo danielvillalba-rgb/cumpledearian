@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="/img/fondo.jpg">
+<link rel="preload" as="image" href="/img/fondo.jpg?v=hd1">
 <style>
   * { box-sizing: border-box; }
   html { background: #0a1a3a; }
@@ -21,7 +21,7 @@
   /* El dragón de fondo */
   .fondo {
     position: fixed; inset: 0; z-index: -2;
-    background: url(/img/fondo.jpg) 50% 40% / cover no-repeat;
+    background: url(/img/fondo.jpg?v=hd1) 50% 40% / cover no-repeat;
     animation: respira 10s ease-in-out infinite;
   }
   @keyframes respira { 50% { transform: scale(1.06); } }
@@ -49,7 +49,7 @@
   /* La esfera, recortada de la misma imagen del dragón */
   .bola {
     width: 130px; height: 130px; margin: 4px auto 18px; border-radius: 50%;
-    background-image: url(/img/fondo.jpg); background-repeat: no-repeat;
+    background-image: url(/img/fondo.jpg?v=hd1); background-repeat: no-repeat;
     box-shadow: 0 0 28px 6px rgba(255, 180, 30, .75);
     animation: late 2.4s ease-in-out infinite;
   }
@@ -78,6 +78,21 @@
   .error { color: #ffb4b4; font-weight: 900; min-height: 1.4em; margin-top: 12px; }
   .grande { font-size: 20px; line-height: 1.4; margin: 6px 0 0; }
   .grande b { color: #ffd23f; }
+
+  /* Pantallas bajas (celular acostado) y muy chicas */
+  @media (max-height: 560px) {
+    body { padding-top: 12px; padding-bottom: 12px; }
+    main { padding: 14px 16px 16px; }
+    .bola { width: 80px; height: 80px; margin-bottom: 10px; }
+    h1 { font-size: 28px; }
+    .sub { margin-bottom: 8px; }
+    button { margin-top: 10px; padding: 10px; }
+  }
+  @media (max-width: 340px) {
+    main { padding: 18px 14px 20px; }
+    label { font-size: 22px; }
+    input, button { font-size: 20px; }
+  }
 </style>
 </head>
 <body>
@@ -100,7 +115,7 @@
   const [, , n, token] = location.pathname.split("/");
   const PAL = ["", "una estrella", "dos estrellas", "tres estrellas", "cuatro estrellas", "cinco estrellas", "seis estrellas", "siete estrellas"];
 
-  // Posición de cada esfera en /img/fondo.jpg (1024 x 434): [x, y, radio]
+  // Posición de cada esfera en /img/fondo.jpg?v=hd1 (1024 x 434): [x, y, radio]
   const W = 1024, H = 434;
   const BOLAS = { 1: [367, 80, 29], 2: [665, 81, 29], 3: [376, 195, 29], 4: [515, 212, 29], 5: [656, 195, 29], 6: [428, 305, 32], 7: [606, 307, 30] };
   function pintarBola(el) {

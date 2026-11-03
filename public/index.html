@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="/img/fondo.jpg">
+<link rel="preload" as="image" href="/img/fondo.jpg?v=hd1">
 <style>
   :root { --oro: #ffd23f; --naranja: #ff9d00; --verde: #2fbf4a; }
   * { box-sizing: border-box; }
@@ -20,24 +20,36 @@
   /* Fondo difuminado (solo se ve en pantallas angostas) */
   .relleno {
     position: fixed; inset: -40px;
-    background: url(/img/fondo.jpg) center / cover;
+    background: url(/img/fondo.jpg?v=hd1) center / cover;
     filter: blur(28px) brightness(.55) saturate(1.2);
   }
 
   .marco { position: fixed; inset: 0; display: grid; place-items: center; }
 
-  /* Escena: misma proporción que la imagen (1024 x 434). Llena toda la
-     pantalla recortando cielo a los costados; el dragón y las esferas
-     siempre quedan a la vista. */
+  /* Escena: misma proporción que la imagen (1024 x 434).
+     Se agranda todo lo posible recortando cielo a los costados, pero siempre
+     deja a la vista la zona del dragón, las 7 esferas y el logo
+     (x 290-735 de 1024, o sea el 43,5% central del ancho).
+     - Notebook / TV: ocupa toda la pantalla.
+     - Celular vertical: la zona del dragón ocupa todo el ancho. */
   .marco { overflow: hidden; }
   .escena {
     position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-    width: max(100vw, 235.94vh); height: max(100vh, 42.383vw);
+    width: min(235.94vh, 230.1vw); height: min(100vh, 97.53vw);
     container-type: size;
     overflow: hidden;
   }
-  @media (max-aspect-ratio: 4/3) {
-    .escena { width: min(100vw, 235.94vh); height: min(100vh, 42.383vw); }
+  /* Celular vertical: título arriba del dragón */
+  .titulo-cel { display: none; }
+  @media (max-aspect-ratio: 5/8) {
+    .titulo-cel {
+      display: block; position: fixed; left: 0; right: 0; top: max(56px, calc(50% - 48.8vw - 24vw)); z-index: 3;
+      text-align: center; padding: 0 16px;
+      font-family: "Bangers", Impact, sans-serif; font-size: 8.5vw; letter-spacing: .3vw; line-height: 1.05;
+      color: var(--oro); -webkit-text-stroke: .35vw #8a3000; text-shadow: .6vw .6vw 0 #4a1500;
+    }
+    .titulo-cel small { display: block; font-family: "Nunito", sans-serif; font-weight: 900; font-size: 4vw; letter-spacing: 0; -webkit-text-stroke: 0; color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,.6); margin-top: 1.5vw; }
+    body .contador { font-size: 7vw; bottom: max(12px, calc(50% - 48.8vw - 16vw)); right: 50%; transform: translateX(50%); }
   }
   .vivo {
     position: absolute; inset: 0;
@@ -144,7 +156,7 @@
   /* Esfera "viva": copia recortada de la esfera de la imagen que late y se balancea */
   .bola-viva {
     position: absolute; border-radius: 50%; transform: translate(-50%, -50%);
-    background-image: url(/img/fondo.jpg); background-repeat: no-repeat;
+    background-image: url(/img/fondo.jpg?v=hd1); background-repeat: no-repeat;
     display: none; pointer-events: none;
   }
   .bola-viva::after {
@@ -293,7 +305,7 @@
 <div class="marco">
   <div class="escena" id="escena">
     <div class="vivo">
-      <img class="fondo" src="/img/fondo.jpg" alt="Shenlong y las 7 Esferas del Dragón - Arian, mi primer añito" draggable="false">
+      <img class="fondo" src="/img/fondo.jpg?v=hd1" alt="Shenlong y las 7 Esferas del Dragón - Arian, mi primer añito" draggable="false">
       <div class="aura"></div>
       <div class="energia"></div>
       <div class="barrido"></div>
@@ -307,6 +319,7 @@
     </div>
   </div>
 </div>
+<div class="titulo-cel">¡Encontrá las 7 esferas!<small>Escaneá los códigos QR y despertá a Shenlong</small></div>
 <div class="contador" id="contador">0 / 7</div>
 <div class="aviso" id="aviso"></div>
 
