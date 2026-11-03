@@ -28,10 +28,28 @@
   .qr img, .qr canvas { width: 220px !important; height: 220px !important; }
   .url { font-size: 11px; color: #777; word-break: break-all; }
   .pie { font-weight: 800; margin-top: 6px; }
+  select { font: inherit; padding: 8px 10px; border: 2px solid #ccc; border-radius: 8px; }
+  input.corto { flex: 0 0 90px; }
+
+  /* ---- Stickers para esferas de telgopor (medidas reales al imprimir) ---- */
+  .grilla.stickers { display: flex; flex-wrap: wrap; gap: 4mm; align-items: flex-start; justify-content: flex-start; max-width: 190mm; }
+  .sticker {
+    width: calc(var(--cm) * 1cm + 8mm); padding: 2mm 4mm 4mm;
+    background: #fff; border: .3mm dashed #999; border-radius: 3mm;
+    text-align: center; break-inside: avoid; page-break-inside: avoid;
+  }
+  .sticker .num {
+    font-family: "Bangers", Impact, sans-serif; color: #d35400; line-height: 1;
+    font-size: max(9pt, calc(var(--cm) * 3.2pt)); margin-bottom: 1mm; white-space: nowrap;
+  }
+  .sticker .qr { margin: 0; }
+  .sticker .qr img, .sticker .qr canvas { width: calc(var(--cm) * 1cm) !important; height: calc(var(--cm) * 1cm) !important; }
+
   @media print {
+    @page { margin: 10mm; }
     body { background: #fff; padding: 0; }
     .panel { display: none; }
-    .grilla { grid-template-columns: repeat(2, 1fr); }
+    .grilla:not(.stickers) { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
 </head>
@@ -50,7 +68,22 @@
     <button id="regen">Regenerar QR</button>
     <button class="sec" onclick="window.print()">Imprimir</button>
   </div>
-  <p class="nota">La dirección debe ser la de tu web pública (ej: https://cumple-arian.onrender.com). Si la cambiás, tocá "Regenerar QR".</p>
+  <p class="nota">La dirección debe ser la de tu web pública (ej: https://cumpledearian.onrender.com). Si la cambiás, tocá "Regenerar QR".</p>
+  <div class="fila">
+    <label for="formato"><b>Formato:</b></label>
+    <select id="formato">
+      <option value="sticker">Stickers para pegar en esferas de telgopor</option>
+      <option value="tarjeta">Tarjetas grandes</option>
+    </select>
+    <span id="opcSticker" class="fila" style="margin:0">
+      <label for="cm"><b>Lado del QR (cm):</b></label>
+      <input id="cm" class="corto" type="number" min="1.5" max="10" step="0.5" value="3">
+      <label for="copias"><b>Copias de cada uno:</b></label>
+      <input id="copias" class="corto" type="number" min="1" max="6" step="1" value="1">
+    </span>
+  </div>
+  <p class="nota" id="notaSticker">Para una esfera de telgopor <b>Nº 3</b> (unos 6 cm de diámetro) va bien un QR de <b>3 cm</b>: más grande se curva demasiado y cuesta escanearlo. Regla: lado del QR ≈ la mitad del diámetro de la esfera. Medí tu esfera y ajustá.<br>
+  Al imprimir, en "Más opciones" poné <b>Escala: 100%</b> (no "Ajustar a la página"), si no, cambian las medidas. Recortá por la línea punteada.</p>
   <div class="fila">
     <button class="peligro" id="reset">Reiniciar juego (borrar esferas)</button>
     <span id="confirmar" hidden>¿Seguro? <button class="peligro" id="si">Sí, borrar</button> <button class="sec" id="no">Cancelar</button></span>
@@ -71,6 +104,27 @@
     const base = document.getElementById("base").value.trim().replace(/\/+$/, "");
     const g = document.getElementById("grilla");
     g.innerHTML = "";
+    const sticker = document.getElementById("formato").value === "sticker";
+    document.getElementById("opcSticker").hidden = !sticker;
+    document.getElementById("notaSticker").hidden = !sticker;
+    g.classList.toggle("stickers", sticker);
+    if (sticker) {
+      const cm = Math.min(10, Math.max(1.5, parseFloat(document.getElementById("cm").value) || 3));
+      const copias = Math.min(6, Math.max(1, parseInt(document.getElementById("copias").value, 10) || 1));
+      g.style.setProperty("--cm", cm);
+      for (let n = 1; n <= 7; n++) {
+        const url = `${base}/e/${n}/${tokens[n]}`;
+        for (let c = 0; c < copias; c++) {
+          const t = document.createElement("div");
+          t.className = "sticker";
+          t.innerHTML = `<div class="num">${"★".repeat(n)}</div><div class="qr"></div>`;
+          t.title = url;
+          new QRCode(t.querySelector(".qr"), { text: url, width: 600, height: 600, correctLevel: QRCode.CorrectLevel.M });
+          g.appendChild(t);
+        }
+      }
+      return;
+    }
     for (let n = 1; n <= 7; n++) {
       const url = `${base}/e/${n}/${tokens[n]}`;
       const t = document.createElement("div");
@@ -108,6 +162,7 @@
   document.getElementById("clave").onkeydown = (e) => { if (e.key === "Enter") document.getElementById("entrar").click(); };
   cargar();
   document.getElementById("regen").onclick = generar;
+  ["formato", "cm", "copias"].forEach((id) => document.getElementById(id).addEventListener("change", generar));
 
   const conf = document.getElementById("confirmar");
   document.getElementById("reset").onclick = () => { conf.hidden = false; };
