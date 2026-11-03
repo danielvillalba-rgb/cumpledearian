@@ -9,5 +9,3 @@ services:
     envVars:
       - key: ADMIN_KEY
         sync: false        # Render te la pide al crear el servicio
-      - key: SECRET
-        generateValue: true # Render genera una clave fija: los QR no cambian

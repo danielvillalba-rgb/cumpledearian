@@ -6,9 +6,7 @@
 // Variables de entorno (configurarlas en el hosting):
 //   PORT           puerto (el hosting lo pone solo)
 //   ADMIN_KEY      clave para entrar a /qr y reiniciar el juego   (OBLIGATORIA en público)
-//   SECRET         clave para generar los códigos de las esferas.
-//                  Con SECRET fijo, los QR impresos siguen sirviendo aunque el
-//                  servidor se reinicie o se borre datos.json.
+//   (Los códigos de los QR son fijos y no dependen de ninguna variable.)
 //   DATA_FILE      dónde guardar el progreso (por defecto ./datos.json)
 
 "use strict";
@@ -44,17 +42,12 @@ function cargar() {
   try { d = JSON.parse(fs.readFileSync(DATOS, "utf8")); } catch { /* primera vez */ }
   d.esferas = d.esferas || {};
   d.ultimo = d.ultimo || null;
-  // Los códigos salen de SECRET (o de ADMIN_KEY si no hay SECRET): así son
-  // siempre los mismos aunque el servidor se reinicie.
-  const semilla = process.env.SECRET || ADMIN_KEY;
-  if (semilla) {
-    d.tokens = {};
-    for (let n = 1; n <= 7; n++) {
-      d.tokens[n] = crypto.createHmac("sha256", semilla).update("esfera-" + n).digest("base64url").slice(0, 10);
-    }
-  } else if (!d.tokens) {
-    d.tokens = {};
-    for (let n = 1; n <= 7; n++) d.tokens[n] = crypto.randomBytes(6).toString("base64url");
+  // Los códigos de los QR son SIEMPRE los mismos: no cambian al reiniciar el
+  // servidor ni al cambiar ADMIN_KEY. (Solo cambian si se define QR_SECRET.)
+  const semilla = process.env.QR_SECRET || "cumpledearian-shenlong-2026";
+  d.tokens = {};
+  for (let n = 1; n <= 7; n++) {
+    d.tokens[n] = crypto.createHmac("sha256", semilla).update("esfera-" + n).digest("base64url").slice(0, 10);
   }
   return d;
 }
@@ -217,6 +210,7 @@ const server = http.createServer(async (req, res) => {
     if (p === "/api/estado") return enviarJSON(res, estadoPublico());
 
     if (p === "/api/info") {
+      if (!ADMIN_KEY && !esAdmin(req, url)) return enviarJSON(res, { error: "Falta configurar ADMIN_KEY en Render (Environment)" }, 403);
       if (!esAdmin(req, url)) return enviarJSON(res, { error: "Clave incorrecta" }, 403);
       return enviarJSON(res, { base: baseURL(req), tokens: ESTADO.tokens });
     }
@@ -263,6 +257,5 @@ server.listen(PORT, () => {
   console.log(`  Pantalla grande : http://localhost:${PORT}/`);
   console.log(`  Códigos QR      : http://localhost:${PORT}/qr`);
   if (!ADMIN_KEY) console.log("  ⚠ Sin ADMIN_KEY: /qr solo funciona desde esta PC.");
-  if (!process.env.SECRET) console.log("  ⚠ Sin SECRET: los códigos QR dependen de datos.json (no lo borres).");
   console.log("=".repeat(56));
 });

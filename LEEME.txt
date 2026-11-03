@@ -13,7 +13,7 @@ PUBLICAR (GitHub + Render, gratis)
      New + -> Blueprint -> elegí el repositorio -> Apply.
      (render.yaml ya tiene toda la configuración.)
   3) Render te va a pedir ADMIN_KEY: escribí una clave tuya.
-     SECRET la genera Render sola (hace que los QR nunca cambien).
+     Los códigos de los QR son fijos: no cambian aunque cambies la clave.
   4) Cuando termine te da una dirección, ej: https://cumple-arian.onrender.com
        Pantalla grande:  https://cumple-arian.onrender.com/
        Códigos QR:       https://cumple-arian.onrender.com/qr

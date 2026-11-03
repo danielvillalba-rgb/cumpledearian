@@ -54,7 +54,7 @@
   <div class="fila">
     <button class="peligro" id="reset">Reiniciar juego (borrar esferas)</button>
     <span id="confirmar" hidden>¿Seguro? <button class="peligro" id="si">Sí, borrar</button> <button class="sec" id="no">Cancelar</button></span>
-    <span id="msg"></span>
+    <span id="msg" style="font-weight:800;color:#c62828"></span>
   </div>
 </div>
 
@@ -67,6 +67,7 @@
   let tokens = {};
 
   function generar() {
+    if (!tokens[1]) { msg.textContent = "Primero ingresá la clave y tocá Entrar"; return; }
     const base = document.getElementById("base").value.trim().replace(/\/+$/, "");
     const g = document.getElementById("grilla");
     g.innerHTML = "";
@@ -74,7 +75,7 @@
       const url = `${base}/e/${n}/${tokens[n]}`;
       const t = document.createElement("div");
       t.className = "tarjeta";
-      t.innerHTML = `<div class="bolita">${esferaSVG(n, false)}</div><h3>Esfera de ${PAL[n]}</h3><div class="qr"></div><div class="pie">¡Escaneame y entregame a Shenlong!</div><div class="url"></div>`;
+      t.innerHTML = `<div class="bolita">${esferaSVG(n, false)}</div><h3>Esfera de ${PAL[n]}</h3><div class="qr"></div><div class="pie">¡Escaneame y registrá la esfera!</div><div class="url"></div>`;
       t.querySelector(".url").textContent = url;
       new QRCode(t.querySelector(".qr"), { text: url, width: 440, height: 440, correctLevel: QRCode.CorrectLevel.M });
       g.appendChild(t);
@@ -88,7 +89,13 @@
 
   async function cargar() {
     const r = await fetch("/api/info", { headers: cab(), cache: "no-store" });
-    if (!r.ok) { msg.textContent = clave ? "Clave incorrecta" : "Ingresá la clave"; return; }
+    if (!r.ok) {
+      let e = {};
+      try { e = await r.json(); } catch (x) {}
+      msg.textContent = !clave ? "Ingresá la clave y tocá Entrar" : (e.error || "Clave incorrecta");
+      tokens = {}; document.getElementById("grilla").innerHTML = "";
+      return;
+    }
     const d = await r.json();
     try { sessionStorage.setItem("clave", clave); } catch (e) {}
     document.getElementById("login").hidden = true;
