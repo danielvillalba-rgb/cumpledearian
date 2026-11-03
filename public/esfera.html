@@ -4,83 +4,126 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>¡Encontraste una Esfera!</title>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="/img/fondo.jpg">
 <style>
   * { box-sizing: border-box; }
+  html { background: #0a1a3a; }
   body {
     margin: 0; min-height: 100vh; min-height: 100dvh;
     font-family: "Nunito", "Segoe UI", sans-serif; color: #fff;
-    background: radial-gradient(ellipse at 50% 20%, #17306b 0%, #050914 75%);
     display: grid; grid-template-columns: minmax(0, 1fr); place-items: center;
-    padding: 24px 16px calc(24px + env(safe-area-inset-bottom, 0px));
+    padding: 20px 16px calc(24px + env(safe-area-inset-bottom, 0px));
     overflow-x: hidden;
   }
-  main { width: 100%; max-width: 420px; min-width: 0; text-align: center; overflow-wrap: break-word; }
+  /* El dragón de fondo */
+  .fondo {
+    position: fixed; inset: 0; z-index: -2;
+    background: url(/img/fondo.jpg) 46% 30% / cover no-repeat;
+    animation: respira 10s ease-in-out infinite;
+  }
+  @keyframes respira { 50% { transform: scale(1.06); } }
+  .velo {
+    position: fixed; inset: 0; z-index: -1;
+    background: linear-gradient(180deg, rgba(5,15,40,.25) 0%, rgba(5,15,40,.55) 45%, rgba(5,12,30,.85) 100%);
+  }
+
+  main {
+    width: 100%; max-width: 400px; min-width: 0; text-align: center;
+    background: rgba(8, 22, 55, .62);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    border: 2px solid rgba(255, 200, 60, .75);
+    border-radius: 24px; padding: 22px 20px 24px;
+    box-shadow: 0 0 30px rgba(255, 170, 0, .35), 0 12px 40px rgba(0,0,0,.45);
+    overflow-wrap: break-word;
+  }
   h1 {
-    margin: 0 0 6px; font-family: "Bangers", Impact, sans-serif; font-weight: 400; font-size: clamp(28px, 9vw, 40px); letter-spacing: 1px;
+    margin: 0 0 4px; font-family: "Bangers", Impact, sans-serif; font-weight: 400;
+    font-size: clamp(30px, 9vw, 40px); letter-spacing: 1px; line-height: 1.05;
     color: #ffd23f; -webkit-text-stroke: 1.5px #b33a00; text-shadow: 3px 3px 0 #4a1500;
   }
-  .sub { opacity: .85; margin: 0 0 18px; font-size: 17px; }
+  .sub { margin: 0 0 14px; font-size: 17px; font-weight: 700; opacity: .95; }
+
+  /* La esfera, recortada de la misma imagen del dragón */
   .bola {
-    width: 190px; height: 190px; margin: 0 auto 22px;
-    filter: drop-shadow(0 0 24px rgba(255,160,0,.7));
-    animation: gira 3.5s ease-in-out infinite;
+    width: 150px; height: 150px; margin: 4px auto 18px; border-radius: 50%;
+    background-image: url(/img/fondo.jpg); background-repeat: no-repeat;
+    box-shadow: 0 0 28px 6px rgba(255, 180, 30, .75);
+    animation: late 2.4s ease-in-out infinite;
   }
-  .bola svg { width: 100%; height: 100%; }
-  @keyframes gira { 50% { transform: translateY(-8px) rotate(6deg); } }
-  label { display: block; font-weight: 800; font-size: 18px; margin-bottom: 10px; }
+  @keyframes late {
+    0%, 100% { transform: scale(1) rotate(0); }
+    25% { transform: scale(1.06) rotate(-6deg); }
+    75% { transform: scale(1.06) rotate(6deg); }
+  }
+
+  label { display: block; font-family: "Bangers", Impact, sans-serif; font-size: 26px; letter-spacing: 1px; color: #fff3c4; margin-bottom: 10px; }
   input {
-    width: 100%; font: inherit; font-size: 22px; font-weight: 800; text-align: center;
+    width: 100%; font: inherit; font-size: 22px; font-weight: 900; text-align: center;
     padding: 14px 16px; border-radius: 16px; border: 3px solid #ffb31a;
-    background: #0b1530; color: #fff; outline: none;
+    background: rgba(255,255,255,.96); color: #8a3000; outline: none;
   }
-  input:focus { box-shadow: 0 0 0 4px rgba(255,179,26,.35); }
+  input::placeholder { color: #c9a06a; font-weight: 700; }
+  input:focus { box-shadow: 0 0 0 4px rgba(255,179,26,.45); }
   button {
-    margin-top: 16px; width: 100%; font: inherit; font-size: 22px; font-weight: 800;
-    padding: 16px; border: 0; border-radius: 16px; cursor: pointer;
-    color: #3a1300; background: linear-gradient(180deg, #ffd23f, #ff8c00);
-    box-shadow: 0 6px 0 #a34e00, 0 10px 24px rgba(255,120,0,.45);
+    margin-top: 16px; width: 100%; font-family: "Bangers", Impact, sans-serif; font-size: 28px; letter-spacing: 1.5px;
+    padding: 14px; border: 0; border-radius: 16px; cursor: pointer;
+    color: #3a1300; background: linear-gradient(180deg, #ffe066, #ff8c00);
+    box-shadow: 0 6px 0 #a34e00, 0 10px 24px rgba(255,120,0,.5);
   }
   button:active { transform: translateY(4px); box-shadow: 0 2px 0 #a34e00; }
   button:disabled { opacity: .6; }
-  .error { color: #ff8a8a; font-weight: 800; min-height: 1.4em; margin-top: 12px; }
-  .ok h1 { font-size: 36px; }
-  .grande { font-size: 20px; line-height: 1.4; }
+  .error { color: #ffb4b4; font-weight: 900; min-height: 1.4em; margin-top: 12px; }
+  .grande { font-size: 20px; line-height: 1.4; margin: 6px 0 0; }
   .grande b { color: #ffd23f; }
 </style>
 </head>
 <body>
+<div class="fondo"></div>
+<div class="velo"></div>
+
 <main id="app">
   <h1>¡Encontraste una Esfera!</h1>
   <p class="sub" id="cual"></p>
   <div class="bola" id="bola"></div>
   <form id="form" autocomplete="off">
-    <label for="nombre">Ingresá tu nombre</label>
-    <input id="nombre" maxlength="24" placeholder="Tu nombre" required autofocus>
-    <button id="btn" type="submit">¡Entregar a Shenlong!</button>
+    <label for="nombre">Ingrese su nombre</label>
+    <input id="nombre" maxlength="24" placeholder="Su nombre" required>
+    <button id="btn" type="submit">Registrar esfera</button>
     <div class="error" id="error" role="alert"></div>
   </form>
 </main>
 
-<script src="/js/esferas.js"></script>
 <script>
   const [, , n, token] = location.pathname.split("/");
   const PAL = ["", "una estrella", "dos estrellas", "tres estrellas", "cuatro estrellas", "cinco estrellas", "seis estrellas", "siete estrellas"];
+
+  // Posición de cada esfera en /img/fondo.jpg (1264 x 842): [x, y, radio]
+  const W = 1264, H = 842;
+  const BOLAS = { 1: [192, 138, 65], 2: [1078, 138, 63], 3: [243, 372, 66], 4: [634, 404, 67], 5: [1022, 371, 66], 6: [392, 593, 68], 7: [885, 601, 68] };
+  function pintarBola(el) {
+    const [x, y, r] = BOLAS[n] || BOLAS[1];
+    el.style.backgroundSize = `${W / (2 * r) * 100}% ${H / (2 * r) * 100}%`;
+    el.style.backgroundPosition = `${(x - r) / (W - 2 * r) * 100}% ${(y - r) / (H - 2 * r) * 100}%`;
+  }
+
   document.getElementById("cual").textContent = "Es la esfera de " + PAL[n];
-  document.getElementById("bola").innerHTML = esferaSVG(+n, false);
+  pintarBola(document.getElementById("bola"));
 
   const app = document.getElementById("app");
   function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
   function terminado(html) {
-    app.classList.add("ok");
-    app.innerHTML = `<div class="bola">${esferaSVG(+n, false)}</div>${html}`;
+    app.innerHTML = `<div class="bola" id="bola2"></div>${html}`;
+    pintarBola(document.getElementById("bola2"));
   }
 
-  // ¿ya fue entregada?
+  // ¿ya fue registrada?
   fetch("/api/estado", { cache: "no-store" }).then((r) => r.json()).then((est) => {
     const e = est.esferas[n];
-    if (e) terminado(`<h1>Esta esfera ya fue entregada</h1><p class="grande">La encontró <b>${esc(e.nombre)}</b>.<br>¡Buscá las que faltan!</p>`);
+    if (e) terminado(`<h1>Esta esfera ya fue registrada</h1><p class="grande">La encontró <b>${esc(e.nombre)}</b>.<br>¡Busque las que faltan!</p>`);
   }).catch(() => {});
 
   document.getElementById("form").addEventListener("submit", async (ev) => {
@@ -88,7 +131,7 @@
     const nombre = document.getElementById("nombre").value.trim();
     const err = document.getElementById("error");
     const btn = document.getElementById("btn");
-    if (!nombre) { err.textContent = "Escribí tu nombre"; return; }
+    if (!nombre) { err.textContent = "Escriba su nombre"; return; }
     btn.disabled = true; err.textContent = "";
     try {
       const r = await fetch("/api/esfera", {
@@ -100,21 +143,21 @@
       if (r.ok) {
         const faltan = 7 - d.total;
         terminado(
-          `<h1>¡Gracias, ${esc(nombre)}!</h1>` +
-          `<p class="grande">Entregaste la esfera de <b>${PAL[n]}</b>.<br>` +
+          `<h1>¡Esfera registrada!</h1>` +
+          `<p class="grande">Gracias, <b>${esc(nombre)}</b>.<br>Registró la esfera de <b>${PAL[n]}</b>.<br>` +
           (faltan === 0
-            ? `<b>¡Era la última!</b> Mirá la pantalla: Shenlong tiene algo que decirte 🐉`
-            : `Faltan <b>${faltan}</b> esfera${faltan > 1 ? "s" : ""}. Mirá la pantalla 👀`) +
+            ? `<b>¡Era la última!</b> Mire la pantalla: Shenlong tiene algo que decirle 🐉`
+            : `Faltan <b>${faltan}</b> esfera${faltan > 1 ? "s" : ""}. ¡Mire la pantalla! 👀`) +
           `</p>`
         );
       } else if (r.status === 409) {
-        terminado(`<h1>Esta esfera ya fue entregada</h1><p class="grande">La encontró <b>${esc(d.nombre)}</b>.<br>¡Buscá las que faltan!</p>`);
+        terminado(`<h1>Esta esfera ya fue registrada</h1><p class="grande">La encontró <b>${esc(d.nombre)}</b>.<br>¡Busque las que faltan!</p>`);
       } else {
-        err.textContent = d.error || "Algo salió mal, probá de nuevo";
+        err.textContent = d.error || "Algo salió mal, pruebe de nuevo";
         btn.disabled = false;
       }
     } catch (e) {
-      err.textContent = "No hay conexión. Revisá tu internet y probá de nuevo";
+      err.textContent = "No hay conexión. Revise su internet y pruebe de nuevo";
       btn.disabled = false;
     }
   });
