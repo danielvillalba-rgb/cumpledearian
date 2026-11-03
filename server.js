@@ -95,7 +95,7 @@ function qrInvalido(res) {
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>Código no válido</title>
 <style>
   body{margin:0;min-height:100vh;display:grid;place-items:center;padding:16px;box-sizing:border-box;font-family:system-ui,sans-serif;color:#fff;
-    background:linear-gradient(rgba(5,15,40,.55),rgba(5,12,30,.85)),url(/img/fondo.jpg) 46% 30%/cover}
+    background:linear-gradient(rgba(5,15,40,.55),rgba(5,12,30,.85)),url(/img/fondo.jpg) 50% 40%/cover}
   main{max-width:380px;text-align:center;background:rgba(8,22,55,.7);border:2px solid #ffc83c;border-radius:20px;padding:24px}
   h1{color:#ffd23f;margin:0 0 10px;font-size:26px}p{font-size:18px;line-height:1.4;margin:0}
 </style></head><body><main><h1>🐉 Este código QR no es válido</h1>

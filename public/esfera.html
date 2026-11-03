@@ -21,7 +21,7 @@
   /* El dragón de fondo */
   .fondo {
     position: fixed; inset: 0; z-index: -2;
-    background: url(/img/fondo.jpg) 46% 30% / cover no-repeat;
+    background: url(/img/fondo.jpg) 50% 40% / cover no-repeat;
     animation: respira 10s ease-in-out infinite;
   }
   @keyframes respira { 50% { transform: scale(1.06); } }
@@ -48,7 +48,7 @@
 
   /* La esfera, recortada de la misma imagen del dragón */
   .bola {
-    width: 150px; height: 150px; margin: 4px auto 18px; border-radius: 50%;
+    width: 130px; height: 130px; margin: 4px auto 18px; border-radius: 50%;
     background-image: url(/img/fondo.jpg); background-repeat: no-repeat;
     box-shadow: 0 0 28px 6px rgba(255, 180, 30, .75);
     animation: late 2.4s ease-in-out infinite;
@@ -100,9 +100,9 @@
   const [, , n, token] = location.pathname.split("/");
   const PAL = ["", "una estrella", "dos estrellas", "tres estrellas", "cuatro estrellas", "cinco estrellas", "seis estrellas", "siete estrellas"];
 
-  // Posición de cada esfera en /img/fondo.jpg (1264 x 842): [x, y, radio]
-  const W = 1264, H = 842;
-  const BOLAS = { 1: [192, 138, 65], 2: [1078, 138, 63], 3: [243, 372, 66], 4: [634, 404, 67], 5: [1022, 371, 66], 6: [392, 593, 68], 7: [885, 601, 68] };
+  // Posición de cada esfera en /img/fondo.jpg (1024 x 434): [x, y, radio]
+  const W = 1024, H = 434;
+  const BOLAS = { 1: [367, 80, 29], 2: [665, 81, 29], 3: [376, 195, 29], 4: [515, 212, 29], 5: [656, 195, 29], 6: [428, 305, 32], 7: [606, 307, 30] };
   function pintarBola(el) {
     const [x, y, r] = BOLAS[n] || BOLAS[1];
     el.style.backgroundSize = `${W / (2 * r) * 100}% ${H / (2 * r) * 100}%`;
