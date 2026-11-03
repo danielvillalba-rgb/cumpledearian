@@ -110,12 +110,11 @@ function archivo(req, res, rel) {
   fs.stat(ruta, (err, st) => {
     if (err || !st.isFile()) return noEncontrado(res);
     const ext = path.extname(ruta).toLowerCase();
-    const esHTML = ext === ".html";
     const etag = `"${st.size.toString(36)}-${st.mtimeMs.toString(36)}"`;
     const headers = {
       ...SEGURIDAD,
       "Content-Type": MIME[ext] || "application/octet-stream",
-      "Cache-Control": esHTML ? "no-cache" : "public, max-age=3600",
+      "Cache-Control": ext === ".mp3" ? "public, max-age=3600" : "no-cache",
       ETag: etag,
     };
     if (req.headers["if-none-match"] === etag) { res.writeHead(304, headers); return res.end(); }
