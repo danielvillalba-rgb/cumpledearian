@@ -60,7 +60,7 @@
     0%, 100% { transform: scale(1) translateY(0); }
     50% { transform: scale(1.018) translateY(-.4%); }
   }
-  body.invocado .vivo { animation: temblor .5s linear 6, respira 9s ease-in-out 3s infinite; }
+  body.ruge .vivo { animation: temblor .5s linear 6, respira 9s ease-in-out 3s infinite; }
   @keyframes temblor {
     0%, 100% { transform: translate(0,0); }
     20% { transform: translate(-.5%, .3%); } 40% { transform: translate(.4%, -.4%); }
@@ -110,7 +110,7 @@
     animation: mirada 6s ease-in-out infinite;
   }
   @keyframes mirada { 0%, 70%, 100% { opacity: 0; } 78%, 88% { opacity: .85; } }
-  body.invocado .ojo { animation: ojoFuego 1.1s ease-in-out infinite; width: 3.4%; }
+  body.dragon .ojo { animation: ojoFuego 1.1s ease-in-out infinite; width: 3.4%; }
   @keyframes ojoFuego { 0%, 100% { opacity: .75; } 50% { opacity: 1; } }
 
   /* Neblina que se mueve por las nubes de abajo */
@@ -129,18 +129,43 @@
 
   canvas#chispas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 
-  /* Oscurecer el cielo al invocar */
-  .noche {
-    position: absolute; inset: 0; pointer-events: none;
-    background: radial-gradient(ellipse 26% 60% at 50% 45%, rgba(10,40,20,.15), rgba(3,10,25,.82) 85%);
-    opacity: 0; transition: opacity 2.5s;
+  /* ---------- Final: invocación de Shenlong ----------
+     ritual: empieza el final (se van los carteles y el contador)
+     oscuro: el cielo se pone negro
+     dragon: aparece Shenlong recortado sobre el negro
+     ruge:   tiembla la pantalla y caen rayos */
+  .negro { position: absolute; inset: 0; background: #000; opacity: 0; transition: opacity 1.5s; pointer-events: none; }
+  #dragon { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 2.2s; pointer-events: none; }
+  .relleno, .niebla, .barrido, #slots, .contador, .titulo-cel { transition: opacity 1.2s; }
+  .aura, .energia { transition: filter 1.5s; }
+  body.ritual { background: #000; }
+  body.ritual .relleno, body.ritual #slots, body.ritual .contador, body.ritual .titulo-cel, body.ritual .aviso { opacity: 0; }
+  body.oscuro .negro { opacity: 1; }
+  body.oscuro .niebla, body.oscuro .barrido { opacity: 0; }
+  body.oscuro:not(.dragon) .aura { filter: opacity(0); }
+  body.oscuro:not(.dragon) .energia { filter: blur(6px) opacity(0); }
+  body.dragon #dragon { opacity: 1; }
+  body.dragon .aura { background: radial-gradient(ellipse 27% 58% at 50% 45%, rgba(140,255,160,.45), transparent 72%); animation-duration: 1.6s; }
+  body.dragon .energia { animation-duration: 2.4s; opacity: 1; }
+
+  /* Copias de las esferas que vuelan durante el final */
+  #vuelo { position: absolute; inset: 0; pointer-events: none; }
+  .vuela {
+    position: absolute; border-radius: 50%; display: none;
+    background-image: url(/img/fondo.jpg?v=hd1); background-repeat: no-repeat;
+    box-shadow: 0 0 1.4cqw .4cqw rgba(255,200,70,.8);
+    transform: translate(-50%, -50%);
   }
-  body.invocado .noche { opacity: 1; }
-  body.invocado .aura { background: radial-gradient(ellipse 27% 58% at 50% 45%, rgba(140,255,160,.55), transparent 72%); animation-duration: 1.4s; }
-  body.invocado .energia { animation-duration: 2.2s; opacity: 1; }
+  body.ritual .vuela { display: block; }
+  .nucleo {
+    position: absolute; width: 22%; aspect-ratio: 1; border-radius: 50%; opacity: 0;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(255,255,220,.95), rgba(255,200,60,.55) 30%, rgba(120,255,150,.18) 55%, transparent 70%);
+    mix-blend-mode: screen;
+  }
 
   .rayo { position: absolute; inset: 0; background: #e6fff0; opacity: 0; pointer-events: none; }
-  body.invocado .rayo { animation: rayo 6s 1; }
+  body.ruge .rayo { animation: rayo 6s 1; }
   @keyframes rayo { 0%,100%{opacity:0} 4%{opacity:.85} 6%{opacity:0} 9%{opacity:.6} 12%{opacity:0} 50%{opacity:0} 52%{opacity:.5} 55%{opacity:0} }
 
   /* ---------- Esferas y recuadros ---------- */
@@ -177,7 +202,6 @@
     to { transform: translate(-50%, -50%) scale(1) rotate(0deg); filter: brightness(1); }
   }
   @keyframes reflejo { 0%, 100% { opacity: .35; } 50% { opacity: .9; } }
-  body.invocado .slot.llena .bola-viva { animation-duration: 1s; }
   .slot.nueva .bola-flash {
     position: absolute; border-radius: 50%; transform: translate(-50%, -50%);
     background: radial-gradient(circle, rgba(255,255,230,1), rgba(255,200,60,.6) 45%, transparent 70%);
@@ -194,7 +218,6 @@
   @keyframes halo { 0%,100% { box-shadow: 0 0 .8cqw .2cqw rgba(255,190,40,.7); } 50% { box-shadow: 0 0 1.8cqw .6cqw rgba(255,210,70,.95); } }
   .slot.nueva .halo { animation: estallido 1.1s ease-out 3; }
   @keyframes estallido { 0% { box-shadow: 0 0 0 0 rgba(255,230,120,1); } 100% { box-shadow: 0 0 0 3cqw rgba(255,200,0,0); } }
-  body.invocado .slot.llena .halo { animation: halo .8s ease-in-out infinite; }
 
   .caja {
     position: absolute; display: grid; place-items: center; text-align: center;
@@ -236,40 +259,41 @@
   }
   .aviso.ver { opacity: 1; transform: translate(-50%, 0); }
 
-  /* ---------- Mensaje final de Shenlong ---------- */
+  /* ---------- Mensaje final de Shenlong (abajo, el dragón queda arriba) ---------- */
   #final {
     position: fixed; inset: 0; z-index: 10;
-    display: grid; place-items: center; padding: 4vmin;
-    background: rgba(0,10,4,.5);
+    display: grid; place-items: end center; padding: 2.5vmin 16px;
     opacity: 0; pointer-events: none; transition: opacity 1.2s;
   }
   #final.ver { opacity: 1; pointer-events: auto; }
   .carta {
-    width: min(1100px, 94vw);
-    display: grid; grid-template-columns: auto 1fr; gap: 4vmin; align-items: center;
+    width: min(1100px, 100%);
+    display: grid; grid-template-columns: auto 1fr; gap: 3.5vmin; align-items: center;
     background: linear-gradient(160deg, rgba(10,45,22,.95), rgba(4,18,10,.95));
     border: .5vmin solid var(--verde);
-    border-radius: 4vmin; padding: 4.5vmin 5vmin;
+    border-radius: 4vmin; padding: 2.8vmin 4vmin;
     box-shadow: 0 0 8vmin rgba(47,191,74,.6), inset 0 0 6vmin rgba(47,191,74,.15);
     transform: scale(.85); transition: transform 1.2s cubic-bezier(.2,1.4,.4,1);
   }
   #final.ver .carta { transform: scale(1); }
   .foto {
-    width: 30vmin; height: 30vmin; border-radius: 50%;
-    border: 1vmin solid var(--oro); box-shadow: 0 0 4vmin rgba(255,180,0,.6);
+    width: 20vmin; height: 20vmin; border-radius: 50%;
+    border: .8vmin solid var(--oro); box-shadow: 0 0 4vmin rgba(255,180,0,.6);
     object-fit: cover; background: #1d2b55;
     display: grid; place-items: center;
-    font-family: "Bangers", Impact, sans-serif; font-size: 15vmin; color: var(--oro);
+    font-family: "Bangers", Impact, sans-serif; font-size: 10vmin; color: var(--oro);
   }
-  .habla { font-family: "Bangers", Impact, sans-serif; font-size: 3vmin; letter-spacing: .3vmin; color: #7dff9a; margin-bottom: 1.5vmin; }
-  #texto { font-size: 4.2vmin; line-height: 1.35; font-weight: 900; min-height: 8em; }
+  .habla { font-family: "Bangers", Impact, sans-serif; font-size: 3vmin; letter-spacing: .3vmin; color: #7dff9a; margin-bottom: 1.2vmin; }
+  #texto { font-size: 3.6vmin; line-height: 1.35; font-weight: 900; min-height: 4.1em; }
   #texto b { color: var(--oro); }
   #texto .cursor { display: inline-block; width: .5em; animation: parpadea .8s steps(1) infinite; }
   @keyframes parpadea { 50% { opacity: 0; } }
-  .equipo { margin-top: 2vmin; font-size: 2.1vmin; opacity: .85; }
+  .equipo { margin-top: 1.5vmin; font-size: 2.1vmin; opacity: .85; }
   @media (max-aspect-ratio: 1/1) {
-    .carta { grid-template-columns: 1fr; justify-items: center; text-align: center; }
-    #texto { min-height: 0; }
+    .carta { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 2vmin; }
+    #texto { min-height: 0; font-size: max(16px, 4.6vmin); }
+    .habla { font-size: max(14px, 3.6vmin); }
+    .equipo { font-size: max(12px, 3vmin); }
   }
 
   .pantalla-completa {
@@ -306,13 +330,15 @@
   <div class="escena" id="escena">
     <div class="vivo">
       <img class="fondo" src="/img/fondo.jpg?v=hd1" alt="Shenlong y las 7 Esferas del Dragón - Arian, mi primer añito" draggable="false">
+      <div class="negro"></div>
+      <canvas id="dragon"></canvas>
       <div class="aura"></div>
       <div class="energia"></div>
       <div class="barrido"></div>
       <div class="ojo" style="left:47.66%; top:21.66%"></div>
       <div class="ojo" style="left:50%; top:20.74%"></div>
-      <div class="noche"></div>
       <div id="slots"></div>
+      <div id="vuelo"><div class="nucleo" id="nucleo"></div></div>
       <div class="niebla"></div>
       <canvas id="chispas"></canvas>
       <div class="rayo"></div>
@@ -365,21 +391,28 @@
 
   // ---------- armar casilleros ----------
   const slots = document.getElementById("slots");
+  const vuelo = document.getElementById("vuelo");
   for (let n = 1; n <= 7; n++) {
     const { bola: [x, y, r], caja: [x1, y1, x2, y2] } = ESFERAS[n];
     const s = document.createElement("div");
     s.className = "slot"; s.id = "s" + n;
     const circ = `left:${pct(x, W)};top:${pct(y, H)};width:${pct(2 * r, W)};height:${pct(2 * r, H)}`;
-    const m = 0;
+    // recorte de la esfera pintada en la imagen de fondo
+    const recorte =
+      `background-size:${(W / (2 * r) * 100).toFixed(2)}% ${(H / (2 * r) * 100).toFixed(2)}%;` +
+      `background-position:${((x - r) / (W - 2 * r) * 100).toFixed(3)}% ${((y - r) / (H - 2 * r) * 100).toFixed(3)}%`;
     s.innerHTML =
       `<div class="halo" style="${circ};--d:${(n * .3).toFixed(1)}s"></div>` +
       `<div class="tapa" style="${circ}"></div>` +
-      `<div class="bola-viva" style="${circ};--d:${(n * .37).toFixed(2)}s;` +
-        `background-size:${(W / (2 * r) * 100).toFixed(2)}% ${(H / (2 * r) * 100).toFixed(2)}%;` +
-        `background-position:${((x - r) / (W - 2 * r) * 100).toFixed(3)}% ${((y - r) / (H - 2 * r) * 100).toFixed(3)}%"></div>` +
+      `<div class="bola-viva" style="${circ};--d:${(n * .37).toFixed(2)}s;${recorte}"></div>` +
       `<div class="bola-flash" style="${circ}"></div>` +
-      `<div class="caja" style="left:${pct(x1 + m, W)};top:${pct(y1 + m, H)};width:${pct(x2 - x1 - 2 * m, W)};height:${pct(y2 - y1 - 2 * m, H)}"><span></span></div>`;
+      `<div class="caja" style="left:${pct(x1, W)};top:${pct(y1, H)};width:${pct(x2 - x1, W)};height:${pct(y2 - y1, H)}"><span></span></div>`;
     slots.appendChild(s);
+    // copia que vuela en el final
+    const v = document.createElement("div");
+    v.className = "vuela"; v.id = "v" + n;
+    v.style.cssText = `${circ};${recorte}`;
+    vuelo.appendChild(v);
   }
 
   // ---------- chispas doradas ----------
@@ -519,23 +552,32 @@
       mostrado = true;
       invocar(est, !!previo);
     } else if (!est.completo && mostrado) {
-      mostrado = false; invocado = false;
-      document.body.classList.remove("invocado");
-      document.getElementById("final").classList.remove("ver");
+      mostrado = false;
+      reiniciarFinal();
     }
     previo = est;
   }
 
-  function esc(s) {
-    return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  }
+  // ================= FINAL DEL JUEGO =================
+  // Gana quien entrega la ÚLTIMA esfera (est.ultimo).
+  // Secuencia (segundos desde que empieza el ritual):
+  //   0     el cielo se pone negro (las esferas siguen brillando)
+  //   1.5   las 7 esferas vuelan al centro y se juntan girando
+  //   4.5   aparece Shenlong sobre el negro (tiembla, rayos, ojos rojos)
+  //   7.5   las esferas suben girando cada vez más rápido
+  //   8.7   salen disparadas cada una para su lado
+  //   10.6  queda el dragón solo y aparece el nombre del ganador
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const ESPERA = 2.5;          // tiempo para ver la última esfera llegar antes del ritual
+  const cuerpo = document.body.classList;
+  const relojes = [];
+  const luego = (seg, fn) => relojes.push(setTimeout(fn, seg * 1000));
+  let vueloT0 = null;
 
   function invocar(est, animado) {
-    invocado = true;
-    document.body.classList.add("invocado");
-    if (animado) for (let n = 1; n <= 7; n++) setTimeout(() => explosion(n), n * 150);
+    prepararDragon();
     const nombre = esc(est.ultimo || "");
-    const html =
+    const FRASE =
       `¡<b>${nombre}</b>!` +
       ` Buenas tardes, <b>${nombre}</b>.` +
       ` Lograste cumplir el desafío.` +
@@ -543,11 +585,182 @@
       ` ¡Que lo disfruten!`;
     const lista = Object.values(est.esferas).sort((a, b) => a.hora - b.hora).map((e) => esc(e.nombre));
     document.getElementById("equipo").innerHTML = "Esferas reunidas por: " + [...new Set(lista)].join(" · ");
+    const texto = document.getElementById("texto");
+    texto.textContent = "";
 
-    setTimeout(() => {
+    if (!animado) {
+      // la pantalla se abrió con el juego ya terminado: directo al final
+      invocado = true;
+      cuerpo.add("ritual", "oscuro", "dragon");
+      document.querySelectorAll(".vuela").forEach((b) => (b.style.display = "none"));
       document.getElementById("final").classList.add("ver");
-      escribir(document.getElementById("texto"), html, animado ? 45 : 0);
-    }, animado ? 6000 : 300);
+      escribir(texto, FRASE, 0);
+      return;
+    }
+    luego(ESPERA, () => {
+      cuerpo.add("ritual", "oscuro");
+      vueloT0 = performance.now();
+      requestAnimationFrame(volar);
+    });
+    luego(ESPERA + 4.5, () => {
+      cuerpo.add("dragon", "ruge");
+      invocado = true;
+      for (let i = 0; i < 160; i++) chispa(.5, .46, { vel: .002 + Math.random() * .008, sube: 0, r: 2.6, dec: .008 + Math.random() * .01, color: Math.random() < .5 ? "150,255,170" : "255,230,120" });
+    });
+    luego(ESPERA + 8, () => cuerpo.remove("ruge"));
+    luego(ESPERA + 10.2, () => cuerpo.add("ruge"));
+    luego(ESPERA + 10.6, () => {
+      document.getElementById("final").classList.add("ver");
+      escribir(texto, FRASE, 45);
+    });
+    luego(ESPERA + 14, () => cuerpo.remove("ruge"));
+  }
+
+  function reiniciarFinal() {
+    relojes.forEach(clearTimeout); relojes.length = 0;
+    vueloT0 = null; invocado = false;
+    cuerpo.remove("ritual", "oscuro", "dragon", "ruge");
+    document.getElementById("final").classList.remove("ver");
+    document.querySelectorAll(".vuela").forEach((b) => (b.style.display = ""));
+    document.getElementById("nucleo").style.opacity = 0;
+  }
+
+  // ---------- vuelo de las esferas ----------
+  const suave = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
+  const giroEn = (t) => 0.5 * t + 0.12 * t * t;      // el anillo gira cada vez más rápido
+  const SALIDA = 8.7, DURA_SALIDA = 1.6;
+
+  function volar(ahora) {
+    if (vueloT0 === null) return;
+    const t = (ahora - vueloT0) / 1000;
+    const sube = suave((Math.min(t, SALIDA) - 7.5) / 1.2);
+    const cx = 512, cy = 200 - 70 * sube;            // centro del anillo (frente al dragón)
+    const R = 42 - 10 * sube;                        // radio del anillo
+    const junta = suave((t - 1.5) / 1.8);            // 0 = en su lugar, 1 = juntas
+    const u = (t - SALIDA) / DURA_SALIDA;            // > 0: salen disparadas
+    let quedan = 0;
+
+    for (let n = 1; n <= 7; n++) {
+      const el = document.getElementById("v" + n);
+      if (el.style.display === "none") continue;
+      const [x0, y0] = BOLAS[n];
+      const base = -Math.PI / 2 + (n - 1) * 2 * Math.PI / 7;
+      const ang = base + giroEn(Math.min(t, SALIDA));
+      let x = cx + R * Math.cos(ang), y = cy + R * Math.sin(ang);
+      let tam = 1 + (.72 - 1) * junta;
+      let brillo = 1.1 + .3 * junta * (1 + Math.sin(t * 7 + n)) / 2 + .5 * sube;
+      if (junta < 1) { x = x0 + (x - x0) * junta; y = y0 + (y - y0) * junta; }
+      if (u > 0) {
+        // cada una sale en línea recta hacia afuera, acelerando, y deja una estela
+        const d = 1100 * u * u;
+        x += d * Math.cos(ang); y += d * Math.sin(ang);
+        tam = .72 * (1 - .55 * Math.min(u, 1));
+        brillo = 1.6 + 2 * u;
+        for (let k = 0; k < 3; k++) chispa(x / W, y / H, { vel: 0, sube: 0, r: 2.4 - u, dec: .02 + Math.random() * .015 });
+        if (u >= 1) { el.style.display = "none"; continue; }
+      } else if (junta > .9 && Math.random() < .5) {
+        chispa(x / W, y / H, { vel: .001 + Math.random() * .002, sube: .0008, r: 1.8, dec: .015 });
+      }
+      quedan++;
+      el.style.left = pct(x, W); el.style.top = pct(y, H);
+      el.style.transform = `translate(-50%, -50%) scale(${tam.toFixed(3)}) rotate(${(giroEn(t) * 57).toFixed(1)}deg)`;
+      el.style.filter = `brightness(${brillo.toFixed(2)})`;
+    }
+
+    // luz en el medio del anillo mientras están juntas
+    const luz = suave((t - 2.8) / 1) * (1 - suave(u * 3)) * (.75 + .25 * Math.sin(t * 9));
+    const nuc = document.getElementById("nucleo");
+    nuc.style.left = pct(cx, W); nuc.style.top = pct(cy, H);
+    nuc.style.opacity = luz.toFixed(3);
+
+    if (quedan || luz > 0.01) requestAnimationFrame(volar);
+  }
+
+  // ---------- Shenlong recortado ----------
+  // Si existe img/dragon.png (o .jpg): la misma imagen que fondo.jpg pero SIN
+  // las esferas, se usa esa y el dragón queda limpio. Si no, se usa fondo.jpg
+  // y las esferas pintadas se tapan con manchas de luz.
+  // De la imagen deja solo lo verde/dorado (el dragón y su energía), borra el
+  // cielo y lo dibuja con un brillo verde.
+  let dragonListo = false;
+  function prepararDragon() {
+    if (dragonListo) return;
+    dragonListo = true;
+    (function probar(lista) {
+      if (!lista.length) {
+        const img = document.querySelector("img.fondo");
+        if (img.complete && img.naturalWidth) recortarDragon(img, false);
+        else img.addEventListener("load", () => recortarDragon(img, false), { once: true });
+        return;
+      }
+      const im = new Image();
+      im.onload = () => recortarDragon(im, true);
+      im.onerror = () => probar(lista.slice(1));
+      im.src = lista[0];
+    })(["/img/dragon.png", "/img/dragon.jpg"]);
+  }
+
+  function recortarDragon(img, limpio) {
+    const w = img.naturalWidth, h = img.naturalHeight, sx = w / W, sy = h / H;
+    const tmp = document.createElement("canvas");
+    tmp.width = w; tmp.height = h;
+    const t = tmp.getContext("2d", { willReadFrequently: true });
+    t.drawImage(img, 0, 0);
+    try {
+      const datos = t.getImageData(0, 0, w, h), d = datos.data;
+      const cx = 512 * sx, cy = 165 * sy, rx = 212 * sx, ryArriba = 215 * sy, ryAbajo = 165 * sy;
+      for (let y = 0; y < h; y++) {
+        const ey = (y - cy) / (y < cy ? ryArriba : ryAbajo);
+        for (let x = 0; x < w; x++) {
+          const i = (y * w + x) * 4;
+          const r = d[i], g = d[i + 1], b = d[i + 2];
+          let a = ((Math.max(r, g) - b) / 255 - .1) / .2;        // verde/dorado sí; cielo y nubes no
+          if (a > 0) {
+            const ex = (x - cx) / rx;
+            a = Math.min(a, 1) * Math.min(1, Math.max(0, (1 - Math.sqrt(ex * ex + ey * ey)) / .2));
+            if (y > 200 * sy && x < 345 * sx) a *= Math.max(0, (x - 325 * sx) / (20 * sx));   // montaña de la izquierda
+          }
+          d[i + 3] = a > 0 ? a * d[i + 3] : 0;
+        }
+      }
+      // tapar las esferas pintadas (y su brillo) con lo que las rodea
+      if (!limpio) for (const [x, y, r] of Object.values(BOLAS)) rellenar(d, w, h, x * sx, y * sy, r * sx * 1.3);
+      t.putImageData(datos, 0, 0);
+    } catch (e) {
+      // si el navegador no deja leer la imagen, se muestra el dragón sin recortar
+    }
+    const cv = document.getElementById("dragon");
+    cv.width = w; cv.height = h;
+    const c = cv.getContext("2d");
+    c.shadowColor = "rgba(120,255,150,.85)";
+    c.shadowBlur = 14 * sx;
+    c.drawImage(tmp, 0, 0);
+  }
+
+  // Tapa un círculo de la imagen: cada píxel de adentro toma una mezcla de los
+  // colores del borde del círculo, pesando más los que tiene más cerca.
+  function rellenar(d, w, h, hx, hy, R) {
+    const N = 160, borde = [];
+    for (let k = 0; k < N; k++) {
+      const an = k / N * Math.PI * 2;
+      const bx = Math.round(hx + (R + 2) * Math.cos(an)), by = Math.round(hy + (R + 2) * Math.sin(an));
+      if (bx < 0 || by < 0 || bx >= w || by >= h) continue;
+      const i = (by * w + bx) * 4, a = d[i + 3];
+      borde.push([bx, by, d[i] * a, d[i + 1] * a, d[i + 2] * a, a]);
+    }
+    const x0 = Math.max(0, Math.floor(hx - R)), x1 = Math.min(w - 1, Math.ceil(hx + R));
+    const y0 = Math.max(0, Math.floor(hy - R)), y1 = Math.min(h - 1, Math.ceil(hy + R));
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+      if (Math.hypot(x - hx, y - hy) >= R) continue;
+      let sr = 0, sg = 0, sb = 0, sa = 0, sw = 0;
+      for (const [bx, by, r, g, b, a] of borde) {
+        const dx = x - bx, dy = y - by, p = 1 / (dx * dx + dy * dy);
+        sr += r * p; sg += g * p; sb += b * p; sa += a * p; sw += p;
+      }
+      const i = (y * w + x) * 4;
+      if (sa > 0) { d[i] = sr / sa; d[i + 1] = sg / sa; d[i + 2] = sb / sa; }
+      d[i + 3] = sa / sw;
+    }
   }
 
   // efecto máquina de escribir respetando las etiquetas <b>
@@ -570,8 +783,30 @@
       if (r.ok) pintar(await r.json());
     } catch (e) { /* servidor caído momentáneamente */ }
   }
-  actualizar();
-  setInterval(actualizar, 2000);
+
+  // el recorte del dragón se prepara al cargar, para que el final no se trabe
+  setTimeout(prepararDragon, 1500);
+
+  // Modo demostración: /?demo simula el juego entero (sin tocar el servidor)
+  // y /?demo=final muestra directamente la pantalla final.
+  const demo = new URLSearchParams(location.search).get("demo");
+  if (demo !== null) {
+    const nombres = ["Daniel", "Sofía", "Daniel", "Martina", "Daniel", "Daniel", "Juan"];
+    const orden = [3, 1, 6, 2, 5, 7, 4];
+    const est = { esferas: {}, ultimo: null, completo: false };
+    const entregar = (i) => {
+      est.esferas[orden[i]] = { nombre: nombres[i], hora: i };
+      if (i === 6) { est.ultimo = nombres[i]; est.completo = true; }
+    };
+    if (demo === "final") { orden.forEach((_, i) => entregar(i)); pintar(est); }
+    else {
+      pintar(est);
+      orden.forEach((_, i) => setTimeout(() => { entregar(i); pintar(est); }, 1500 + i * 1200));
+    }
+  } else {
+    actualizar();
+    setInterval(actualizar, 2000);
+  }
 </script>
 </body>
 </html>

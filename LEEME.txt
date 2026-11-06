@@ -36,8 +36,30 @@ MÚSICA (public\mp3\audio.mp3, suena en bucle)
   Si usás Microsoft Edge en la TV, podés evitar ese clic:
   edge://settings/content/mediaAutoplay -> "Permitir".
 
+FINAL DEL JUEGO
+  Gana quien entrega la ÚLTIMA esfera (aunque otro haya encontrado más).
+  Cuando se registra la séptima, en la pantalla grande:
+    1) el cielo se pone negro y solo brillan las 7 esferas
+    2) las esferas vuelan al centro y se juntan girando
+    3) aparece Shenlong sobre el negro (tiembla todo, rayos, ojos rojos)
+    4) las esferas salen disparadas cada una para su lado
+    5) queda el dragón solo y aparece el mensaje de Shenlong con el nombre
+       del ganador
+  Dura unos 13 segundos. Si se recarga la página, va directo al paso 5.
+
+  DRAGÓN LIMPIO EN EL FINAL (opcional, recomendado)
+    En fondo.jpg las esferas están pintadas encima del dragón. Para que en
+    el final quede el dragón solo y sin manchas, guardá la MISMA imagen pero
+    sin las 7 esferas como  public\img\dragon.png  (o dragon.jpg).
+    Tiene que tener el mismo tamaño y encuadre que fondo.jpg.
+    Si no está, se tapan las esferas pintadas con manchas de luz.
+
 FOTO DE ARIAN (aparece en el mensaje final de Shenlong)
   Guardala como  public\img\arian.jpg   (también sirve .png / .webp)
+
+  PROBAR EL FINAL SIN JUGAR (no cambia nada en el juego real):
+    .../?demo         simula las 7 esferas entregándose y todo el final
+    .../?demo=final   muestra directamente la pantalla del ganador
 
 REINICIAR EL JUEGO
   Botón "Reiniciar juego" en /qr. Los QR impresos siguen sirviendo.
